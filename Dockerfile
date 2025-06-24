@@ -1,6 +1,13 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
+# set the argument default
+ARG SECRET_KEY_BASE=some-dummy-value
+
+# assign it to an environment variable
+# we can wrap the variable in brackets
+ENV SECRET_KEY_BASE ${SECRET_KEY_BASE}
+
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
 # docker build -t dot .
 # docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name dot dot
