@@ -1,12 +1,6 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# set the argument default
-ARG SECRET_KEY_BASE=some-dummy-value
-
-# assign it to an environment variable
-# we can wrap the variable in brackets
-ENV SECRET_KEY_BASE ${SECRET_KEY_BASE}
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
 # docker build -t dot .
@@ -16,7 +10,11 @@ ENV SECRET_KEY_BASE ${SECRET_KEY_BASE}
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.2.2
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+FROM ruby:$RUBY_VERSION-slim AS base
+
+# Assign a default value for SECRET_KEY_BASE if not provided
+ARG SECRET_KEY_BASE=dummy-value-for-build
+ENV SECRET_KEY_BASE=${SECRET_KEY_BASE}
 
 # Rails app lives here
 WORKDIR /rails
@@ -70,6 +68,6 @@ USER 1000:1000
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+# Start server
+EXPOSE 3000
+CMD ["./bin/rails", "server", "-b", "0.0.0.0"]
